@@ -1,6 +1,7 @@
 build :
-	nasm -f macho32 -o target/boot.o src/asm/polinx-boot.asm 
-	nasm -f macho32  -o target/system.o src/asm/polinx.asm
-	gcc -m32 target/system.o target/boot.o
-	# dd if=target/boot.bin of=target/boot.img bs=512 count=1
-	# dd if=target/boot.bin of=target/boot.img bs=512 count=1
+	cp src/10MB-MBR.vhd target/polinx.vhd
+	gcc src/boot/polinx-boot-lib.c -S -o target/boot/polinx-boot-lib.s
+	as src/boot/polinx-boot.s -o target/boot/polinx-boot.o
+	as target/boot/polinx-boot-lib.s -o target/boot/polinx-boot-lib.o
+	ld -Ttext=0x7c00 --oformat binary -o target/boot/polinx-boot.bin target/boot/polinx-boot.o target/boot/polinx-boot-lib.o
+	dd if=target/boot/polinx-boot.bin of=target/polinx.vhd count=1 conv=notrunc
