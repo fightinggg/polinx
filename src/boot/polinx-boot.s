@@ -1,7 +1,6 @@
 .section .text
 .global cpuHlt
 .global readSector
-.global printStr
 .global _start
 _start:
   movw %cs, %ax
@@ -18,7 +17,7 @@ readSector:
 	.globl	printStr
 	.type	printStr, @function
 printStr:
-.LFBPrintStr:
+.LFB0:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -26,17 +25,12 @@ printStr:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movq	%rdi, -8(%rbp)
-  movw $rbp, %ax
-  movw %ax, %bp
-  movw $16, %cx
-  movw $0x1301, %ax
-  movw $0x000c, %bx
-  movb $0x00, %dl
-  int $0x10
+	addq	$1, -8(%rbp)
+	addq	$1, -8(%rbp)
 	nop
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFEPrintStr:
+.LFE0:
 	.size	printStr, .-printStr

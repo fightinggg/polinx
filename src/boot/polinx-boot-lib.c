@@ -2,8 +2,7 @@
 
 void cpuHlt();
 void readSector(short cylinder, short head, short sector, short targetAddr);
-void printStr(char* addr);
-
+void printStr(char *addr);
 
 void loadPolinx()
 {
