@@ -7,7 +7,8 @@ _start:
   movw %cs, %ax
   movw %ax, %ds
   movw %ax, %ss
-  call printStr
+
+  call loadPolinx
   call sleep
 cpuHlt:
   HLT
@@ -20,15 +21,37 @@ sleep:
 
 	.globl	printStr
 	.type	printStr, @function
-printStr:
+printAl:
+  pushw %ax
+  pushw %bx
+  movb $0x0e,%ah
+  movw $0x0f,%bx
+  int $0x10
+  popw %bx
+  popw %ax
+  ret
 
-  movw $hello, %ax
+printStr:
+  pushw %ax
+  pushw %bx
+  pushw %cx
+  pushw %dx
+  pushw %bp
+
+	movl s, %eax
   movw %ax, %bp
   movw $16, %cx
   movw $0x1301, %ax
   movw $0x000c, %bx
   movb $0x00, %dl
   int $0x10
+
+  popw %bp
+  popw %dx
+  popw %cx
+  popw %bx
+  popw %ax
+
   ret
 
 .global hello
