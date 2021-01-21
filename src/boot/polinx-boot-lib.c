@@ -22,7 +22,7 @@ void printStr(char *addr, int len);
 // }
 char s[] = "polinx start! ";
 
-void loadPolinx()
+void polinxStart()
 {
     printStr(s, 10);
     while (ture)
