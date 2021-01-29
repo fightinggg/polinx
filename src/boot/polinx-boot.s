@@ -35,11 +35,11 @@ start:
     cli                                             # Disable interrupts
     cld                                             # String operations increment
 
-    # Set up the important data segment registers (DS, ES, SS).
-    xorw %ax, %ax                                   # Segment number zero
-    movw %ax, %ds                                   # -> Data Segment
-    movw %ax, %es                                   # -> Extra Segment
-    movw %ax, %ss                                   # -> Stack Segment
+    # ss=ds=es=ax=0
+    xorw %ax, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %ss
 
     # Enable A20:
     #  For backwards compatibility with the earliest PCs, physical
@@ -76,18 +76,18 @@ seta20.2:
 
 .code32                                             # Assemble for 32-bit mode
 protcseg:
-    # Set up the protected-mode data segment registers
+    # ss=ds=es=fs=gs=ax=PROT_MODE_DSEG
     movw $PROT_MODE_DSEG, %ax                       # Our data segment selector
-    movw %ax, %ds                                   # -> DS: Data Segment
-    movw %ax, %es                                   # -> ES: Extra Segment
-    movw %ax, %fs                                   # -> FS
-    movw %ax, %gs                                   # -> GS
-    movw %ax, %ss                                   # -> SS: Stack Segment
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+    movw %ax, %ss
 
     # Set up the stack pointer and call into C. The stack region is from 0--start(0x7c00)
     movl $0x0, %ebp
     movl $start, %esp
-    ; # call printStr
+    call printStr
 spin:
     jmp spin
 
@@ -112,13 +112,19 @@ printStr:
     pushw %dx
     pushw %bp
     
-    # movw 12(%ebp), %cx
-    # movw 8(%ebp), %bp
-    movw $10,%cx
-    movw $s,%bp
-    movw $0x1301, %ax
-    movw $0x000c, %bx
-    movb $0x00, %dl
+    # ES:BP 字符串地址
+    movw $10,%ax
+    # mul dh
+    addw $s, %ax
+    movw %ax, %bp
+    # ES:BP 字符串地址
+    movw %ds,%ax
+    movw %ax,%es
+    
+    movw $10,%cx #  字符串长度
+    movw $0x1301, %ax # 
+    movw $0x0007, %bx # 页号0, 白底黑字
+    movw $0x0000, %dx # 0行 0列
     int $0x10
 
     popw %bp

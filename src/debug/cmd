@@ -1,0 +1,11 @@
+ qemu-system-i386 -s -S target/polinx.img 
+
+ gdb -q
+ target remote :1234
+ set architecture i8086
+ display /8i $cs * 0x10 + $pc
+ b *0x7c00
+ c
+
+
+

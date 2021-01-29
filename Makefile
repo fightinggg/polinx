@@ -2,6 +2,15 @@ build : target/polinx-boot.bin
 	dd if=target/polinx-boot.bin of=target/polinx.img count=1 bs=510 conv=notrunc
 	echo 55aa | xxd -r -ps | dd of=target/polinx.img count=1 bs=2 seek=255 conv=notrunc
 
+objdasm: target/polinx-boot.o
+	objdump -d -s target/polinx-boot.o > target/polinx-boot.objdasm
+
+
+dasm: target/polinx-boot.bin
+	objdump -m i386 -b binary -D target/polinx-boot.bin  > target/polinx-boot.dasm
+   
+
+
 target/polinx-boot.bin:src/boot/linker.ld target/polinx-boot.o target/polinx-boot-lib.o
 	ld --oformat binary -m elf_i386  -o target/polinx-boot.bin target/polinx-boot.o target/polinx-boot-lib.o -T $<
 
